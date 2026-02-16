@@ -1,0 +1,23 @@
+{
+  "id2label": {
+    "0": "anger",
+    "1": "fear",
+    "2": "joy",
+    "3": "sadness",
+    "4": "surprise"
+  },
+  "label2id": {
+    "anger": 0,
+    "fear": 1,
+    "joy": 2,
+    "sadness": 3,
+    "surprise": 4
+  },
+  "emotions": [
+    "anger",
+    "fear",
+    "joy",
+    "sadness",
+    "surprise"
+  ]
+}

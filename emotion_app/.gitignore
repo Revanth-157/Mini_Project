@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.pyc
+*.dll
+*.bin
+*.safetensors
+*.pt
+*.pth
+dist/
+build/

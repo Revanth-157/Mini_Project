@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Sentiment Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='detailed.css') }}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <a href="/" class="back-btn">← Back to Home</a>
+        <h1>📊 Detailed Sentiment Analysis</h1>
+    </div>
+
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Analyzing your text...</p>
+    </div>
+
+    <div id="results" style="display: none;">
+        <!-- Overall Summary Card -->
+        <div class="summary-card">
+            <h2>📝 Overall Summary</h2>
+            <div class="overall-emotion">
+                <span id="overall-emoji" class="big-emoji"></span>
+                <div class="emotion-details">
+                    <h3 id="overall-emotion-name"></h3>
+                    <p id="overall-confidence"></p>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="word-count"></span>
+                    <span class="stat-label">Words</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="sentence-count"></span>
+                    <span class="stat-label">Sentences</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emotion Distribution Chart -->
+        <div class="chart-card">
+            <h2>📊 Emotion Distribution</h2>
+            <div id="emotion-chart"></div>
+        </div>
+
+        <!-- Sentence-by-Sentence Breakdown -->
+        <div class="breakdown-card">
+            <h2>🔍 Sentence-by-Sentence Analysis</h2>
+            <div id="sentence-breakdown"></div>
+        </div>
+
+        <!-- Emotion Percentages -->
+        <div class="percentage-card">
+            <h2>📈 Emotion Percentages</h2>
+            <div id="emotion-percentages"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get text from URL parameter or localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const textToAnalyze = urlParams.get('text') || localStorage.getItem('analysisText') || '';
+    
+    if (!textToAnalyze) {
+        alert('No text to analyze!');
+        window.location.href = '/';
+    } else {
+        analyzeText(textToAnalyze);
+    }
+
+    async function analyzeText(text) {
+        try {
+            const response = await fetch('/analyze_detailed', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({text})
+            });
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+                return;
+            }
+            
+            displayResults(data);
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    function displayResults(data) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('results').style.display = 'block';
+        
+        // Overall Summary
+        document.getElementById('overall-emoji').textContent = data.overall_emoji;
+        document.getElementById('overall-emotion-name').textContent = data.overall_emotion.toUpperCase();
+        document.getElementById('overall-confidence').textContent = `${data.overall_confidence}% Confidence`;
+        document.getElementById('word-count').textContent = data.word_count;
+        document.getElementById('sentence-count').textContent = data.total_sentences;
+        
+        // Emotion Distribution Chart
+        const chartDiv = document.getElementById('emotion-chart');
+        data.all_emotions.forEach(emotion => {
+            const barDiv = document.createElement('div');
+            barDiv.className = 'chart-bar';
+            barDiv.innerHTML = `
+                <div class="chart-label">
+                    ${emotion.emoji} ${emotion.emotion}
+                </div>
+                <div class="chart-bar-bg">
+                    <div class="chart-bar-fill" style="width: ${emotion.confidence}%; background-color: ${emotion.color};">
+                        ${emotion.confidence}%
+                    </div>
+                </div>
+            `;
+            chartDiv.appendChild(barDiv);
+        });
+        
+        // Sentence Breakdown
+        const breakdownDiv = document.getElementById('sentence-breakdown');
+        data.sentence_analysis.forEach((sentence, index) => {
+            const sentenceDiv = document.createElement('div');
+            sentenceDiv.className = 'sentence-item';
+            sentenceDiv.style.borderLeftColor = sentence.color;
+            sentenceDiv.innerHTML = `
+                <div class="sentence-header">
+                    <span class="sentence-number">#${index + 1}</span>
+                    <span class="sentence-emotion">
+                        ${sentence.emoji} ${sentence.emotion} (${sentence.confidence}%)
+                    </span>
+                </div>
+                <p class="sentence-text">${sentence.text}</p>
+            `;
+            breakdownDiv.appendChild(sentenceDiv);
+        });
+        
+        // Emotion Percentages
+        const percentageDiv = document.getElementById('emotion-percentages');
+        const sortedPercentages = Object.entries(data.emotion_percentages)
+            .sort((a, b) => b[1] - a[1])
+            .filter(([_, percentage]) => percentage > 0);
+        
+        sortedPercentages.forEach(([emotion, percentage]) => {
+            const emotionData = data.all_emotions.find(e => e.emotion === emotion);
+            const pieceDiv = document.createElement('div');
+            pieceDiv.className = 'percentage-item';
+            pieceDiv.innerHTML = `
+                <div class="percentage-bar" style="background-color: ${emotionData.color}; width: ${percentage}%"></div>
+                <div class="percentage-label">
+                    ${emotionData.emoji} ${emotion}: ${percentage}%
+                </div>
+            `;
+            percentageDiv.appendChild(pieceDiv);
+        });
+    }
+</script>
+</body>
+</html>

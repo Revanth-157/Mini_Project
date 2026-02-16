@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>🧠 Emotion Detector</h1>
+
+    <!-- Text Emotion Analysis Card -->
+    <div class="card">
+        <h2>📝 Text Emotion Analysis</h2>
+        <textarea id="text-input" placeholder="Type your text here..."></textarea>
+        <button onclick="analyzeText()">Analyze Text</button>
+        <div id="text-result" class="result"></div>
+        <div id="text-chart" class="chart-container"></div>
+    </div>
+
+    <!-- Speech Emotion Analysis Card -->
+    <div class="card">
+        <h2>🎤 Speech Emotion Analysis</h2>
+        
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <label for="languageSelect">🌍 Select your speaking language:</label>
+            <select id="languageSelect">
+                <option value="auto">🌐 Auto-Detect (Any Language)</option>
+                <optgroup label="🇮🇳 Indian Languages">
+                    <option value="hi">Hindi (हिंदी)</option>
+                    <option value="te">Telugu (తెలుగు)</option>
+                    <option value="ta">Tamil (தமிழ்)</option>
+                    <option value="bn">Bengali (বাংলা)</option>
+                    <option value="mr">Marathi (मराठी)</option>
+                    <option value="gu">Gujarati (ગુજરાતી)</option>
+                    <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                    <option value="ml">Malayalam (മലയാളം)</option>
+                    <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                    <option value="ur">Urdu (اردو)</option>
+                </optgroup>
+                <optgroup label="🌏 Other Languages">
+                    <option value="en">English</option>
+                    <option value="es">Spanish (Español)</option>
+                    <option value="fr">French (Français)</option>
+                    <option value="de">German (Deutsch)</option>
+                    <option value="zh">Chinese (中文)</option>
+                    <option value="ja">Japanese (日本語)</option>
+                    <option value="ko">Korean (한국어)</option>
+                    <option value="ar">Arabic (العربية)</option>
+                    <option value="ru">Russian (Русский)</option>
+                    <option value="pt">Portuguese (Português)</option>
+                </optgroup>
+            </select>
+        </div>
+        
+        <!-- Recording Controls -->
+        <div class="recording-controls">
+            <button id="start-btn" onclick="startRecording()">🎤 Start Recording</button>
+            <button id="stop-btn" onclick="stopRecording()" disabled>⏹ Stop Recording</button>
+        </div>
+        <div id="recording-status" class="status"></div>
+        <div id="speech-result" class="result"></div>
+        <div id="speech-chart" class="chart-container"></div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
