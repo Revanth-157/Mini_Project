@@ -54,8 +54,3 @@ In our project:
 
 ---
 
-If you want, I can also give:
-
-* A 5-mark exam-ready answer
-* A technical explanation for report
-* Or architecture diagram explanation 🎯
